@@ -208,8 +208,7 @@ Give a novel single-branch attentive network and then use cnn to extract feature
 
   ### Results on TU-Berlin Benchmark
 
-By inserting one of these CNN alternatives into the proposed architecture, we can study how helpful the attention learned by RNN can
-be for vector sketch recognition.
+By inserting one of these CNN alternatives into the proposed architecture, we can study how helpful the attention learned by RNN can be for vector sketch recognition.
 
 Most features of sketch are extracted by CNN variants instead of RNN and attention. 
 
@@ -225,7 +224,7 @@ Most features of sketch are extracted by CNN variants instead of RNN and attenti
 
 ![image-20200718192159927](images/image-20200718192159927.png)
 
-​			This indicates that, for CNN-based recognition networks, stroke importance may not always be properly aligned with stroke order under such a 			straightforward encoding scheme, due to different drawing styles used by different users, and this encoding scheme may even pose challenges to 		CNNs 	for learning effective patterns.
+​			This indicates that, for CNN-based recognition networks, stroke importance may not always be properly aligned with stroke order under such a straightforward encoding scheme, due to different drawing styles used by different users, and this encoding scheme may even pose challenges to CNNs for learning effective patterns.
 
 ### Limitation
 

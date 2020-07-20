@@ -10,22 +10,25 @@ There are many different task in sketch, however, for one dataset, what the mode
 
   1. CNN is very powerful, however,  it can't fit some character of sketch very well.
   2. CNN has arrived a high accuracy.
-  3. CNN with unsupervised learning on sketch is still blank.
+  3. Research using CNN with unsupervised learning on sketch is still blank.
 
   ![image-20200719132759655](images/image-20200719132759655.png)
 
 - RNN
 
-  1. temporal points as input maybe make no sense, especially after attention was invented. 
+  1. Temporal points as input maybe make no or little sense, especially after attention was invented. 
+  2. Some simple information captured by RNN can still be captured by CNN (such as ResNet50).
+  3. Considering the human, we don't care about every points of a sketch, points will be organized in our brain and I think this is structural information.
 
 - GNN
 
-  1. learning structural knowledge, combining with self-supervised learning is perfect. 
-  2. like human, human can't know the pattern if the points or strokes are random and noisy.
+  1. Learning structural knowledge, combining with self-supervised learning is perfect. 
+  2. Like human, we can't recognize the pattern if the points or strokes are random and noisy.
 
 - Transformer&Bert
 
-  1. seq2seq, the sequence is still composed of points, sketch bert has arrive their upper bound.
+  1. Seq2seq, the sequence is still composed of points, sketch bert has arrive their upper bound.
+  2. Self-supervised learning is their shining point.
 
 ![image-20200719110041642](../notes/images/image-20200719110041642.png)
 
