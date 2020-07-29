@@ -16,24 +16,6 @@ To summarize, our work makes the following major contributions.
 
 3) Our work not only enables sketch-based image retrieval but also delivers an automatic sketcher that captures human visual perception beyond the edge map of a photo.  
 
-## Ask Myself
-
-### Question they raise
-
-**Existing methods fail in sketch to photo synthesis when both shape and color translations are needed simultaneously.**
-
-1) Most image synthesis that deals with shape transfiguration tends to stay in the same visual domain. (only in sketch domain)
-
-2) Edge maps are most studied, an edge map based drawing to photo synthesis task does not have the spatial deformation problem between sketches and photos. (color but no edge) (sketch is more flexible than edge map)
-
-### Question sovled?
-
-- All the models perform poorly on ChairV2, probably due to more shape variations but far fewer training data for chairs than for shoes (1:5).
-
-![image-20200725115818226](images/image-20200725115818226.png)
-
-
-
 ## Model Architecture
 
 ### Shape Translation
@@ -98,11 +80,50 @@ we introduce two strategies for the model to extract style-invariant information
 
 ### Evaluation metrics
 
-1) Fr´echet Inception Distance (FID)
+1) Fr´echet Inception Distance (FID) - the distance between synthesized and real samples according inception-v3
 
-2) User study (Quality).
+2) User study (Quality) - evaluates subjective impressions in terms of similarity and realism
 
-3) Learned perceptual image patch similarity (LPIPS)
+3) Learned perceptual image patch similarity (LPIPS) - measures the distance between two images. As in [15,38], we use it to evaluate the diversity of synthesized photos.
+
+## Comment 
+
+### Question they raise
+
+**Existing methods fail in sketch to photo synthesis when both shape and color translations are needed simultaneously.**
+
+1) Most image synthesis that deals with shape transfiguration tends to stay in the same visual domain. (only in sketch domain)
+
+2) Edge maps are most studied, an edge map based drawing to photo synthesis task does not have the spatial deformation problem between sketches and photos. (color but no edge) (sketch is more flexible than edge map)
+
+### Question sovled?
+
+- All the models perform poorly on ChairV2, probably due to more shape variations but far fewer training data for chairs than for shoes (1:5). And there is still some space to improve.
+
+![image-20200725115818226](images/image-20200725115818226.png)
+
+- sketch based image retrieval: achieve an accuracy of 37.2%(65.2%) at top5 (top20) respectively. 
+
+### Limitation of Method
+
+- Their Synthesis base on two collections of one class (e.g. shoe dataset) and can not be apply to all classes. 
+- Their representation of sketch is same as that of image rather than specific structure with sketch. (change the representation of sketch, use sketch-bert for example)
+- De-noising attention maybe could be replaced by sketch simpifiy module. the origin module may lose some information.
+- sketches in this paper are more regular than those in google sketch dataset, however, I think they are more close to common people.       *(Compared to QuickDraw [11], Sketchy [28], and TU-Berlin [6], sketches in ShoeV2/ChairV2 have more fine-grained details. They demand like-kind details in synthesized photos and are thus more challenging as a testbed for sketch to photo synthesis.)*
+
+## Creation
+
+### Good Idea
+
+- two-stage
+- self-supervision to avoid the influence of noise
+- attention to reweight 
+
+### Other Idea
+
+
+
+### New things I want to do
 
 ## Questions
 
@@ -111,28 +132,45 @@ we introduce two strategies for the model to extract style-invariant information
 - does cycle loss conflict with self-supervision loss?
 - what does identity loss in shape translation really mean? (really make sense?)
 - does sketch2sketch exist?
-
-## Limitation
-
-- Their Synthesis base on two collections of one class (e.g. shoe dataset)
-- Their representation of sketch is same as that of image.
+- why use this attention module?
 
 ## Idea
 
-- 3 steps: sketch -> edge -> greyscale -> image
+- 3-stage: sketch -> edge -> greyscale -> image
 - evaluation metrix is numeric, a new evaluation method: randomly given painter 50 photos in a short period, then ask the painter to draw sketch, then our model give the prediction result to painter, the painter judge whether the result is what he wants.  
+- change the representation of sketch (in encoder of generator), use sketch-bert for example
+- pre-train model of different stages and then combine them to fine-tune.
+- use the way used in deepfacedrawing (do something to encoded vector ) to add other information like text information 
 
 
 
 # DeepFaceDrawing: Deep Generation of Face Images from Sketches
 
+## Contribution
 
+Model uses input sketches as soft constraints and is thus able to produce high-quality face images even from rough and/or incomplete sketches.
 
+## Good Idea
 
+uses input sketches as soft constraints rather than hard constraints.
+
+## Comment
+
+### Question they raise
+
+Research before require sketches with quality similar to edge maps of real images to synthesize realistic face images. However, such sketches are difficult to make especially for users with little training in drawing.
+
+our key idea is to implicitly learn a space of plausible face sketches from real face sketch images and find the closest point in this space to approximate an input sketch. In this way, sketches can be used more like soft constraints to guide image synthesis.
+
+### Assume
+
+Learning such a space globally (if exists) is not very feasible due to the limited training data against an expected high- dimensional feature space., so they assume each component manifold is low-dimensional and locally linear.
 
 ## Model Architecture
 
 ### CE
+
+we assume that the underlying component manifolds are locally linear. We then follow the main idea of the classic locally linear embedding (LLE) algorithm.
 
 first learn the feature embeddings of face components. encode five components to 5 512 dimensions vector and then use decoder to reconstruct sketch components. training this auto encoder with self-supervision methods using mse loss can make feature vector representing sketch details better.
 
@@ -143,6 +181,8 @@ first learn the feature embeddings of face components. encode five components to
 design the FM module with five separate decoding models converting feature vectors to spatial feature maps. For each feature map, it has 32 channels and is of the same spatial size as the corresponding component in the sketch domain. we use a fixed depth order (i.e., “left/right eyes" > “nose" > “mouth” > “remainder") to merge the feature maps.
 
 This step turns component sketches into semantically meaningful feature vectors.
+
+Since sketches only have one channel, the incompatibility of neigh- boring components in the overlapping regions is thus difficult to automatically resolve by sketch-to-image networks. This motivates us to map the feature vectors of sampled manifold points to multi- channel feature maps (i.e., 3D feature tensors).
 
 ![image-20200724092009493](images/image-20200724092009493.png)
 
@@ -181,8 +221,83 @@ We thus adopt this approach (i.e., Photocopy + sketch simplification) to prepare
 
 ## Experiments
 
+- Usability Study
 
+- **Comparison with Alternative Refinement Strategies**
+
+  1. **component-level retrieval-and-interpolation**
+  2. **locally, use top- 1 instead of top-K for manifold projection**
+  3. **globally, replace the CE module with a new module for the feature embeddings of entire face sketches**
+
+  ![image-20200728143824242](images/image-20200728143824242.png)
+
+- Perceptive Evaluation Study
+
+- Comparison with Existing Solutions
 
 ## Questions
 
 - Why do they divide human face into component before embedding?
+
+## Idea
+
+- make position of face component learnable rather than fixed.
+
+# Image Generation from Sketch Constraint Using Contextual GAN
+
+## Publish
+
+post ? of ECCV 2018 
+
+## Contribution
+
+search for an encoding of the provided corrupted image using only the sketch to provide the weak context for “completing” the image based on a modified objective. This encoding is then used to reconstruct the image by feeding it to the generator which generates the photographic object from sketch. Even for a poorly drawn sketch, they can generate visually comfortable images.
+
+sometimes the free-hand sketch and its natural photographic object do not strictly align to each other. conditional GAN (e.g., pix2pix [9]) is incapable of generating realistic and visually comfortable images.
+
+the corrupted part of an input image is completed using surround- ing image content as context.
+
+![image-20200727100714889](images/image-20200727100714889.png)
+
+## Method
+
+we spatially concatenate them into a joint sketch-image pair (AB), The generator embeds the joint images onto a non- linear joint space z, i.e., z is a joint embedding of sketch and image.
+
+### Architecture
+
+![image-20200728093856275](images/image-20200728093856275.png)
+
+
+
+### Objective Function
+
+- Contextual Loss
+
+![image-20200727102306109](images/image-20200727102306109.png)
+
+![image-20200728091527239](images/image-20200728091527239.png)
+
+​			since a sketch is a binary image rather than a natural image, we use the KL-divergence to measure the similarity between the distribution of two sketches which tends to produce better alignment of sketches.  y is input sketch.
+
+- Perceptual loss
+
+![image-20200727102551171](images/image-20200727102551171.png)
+
+### Contextual GAN
+
+contextual GAN consists of the training stage and completion stage. The training stage is the same as the traditional GAN training except that our train- ing samples are joint images. After training, we learn a generative network G that achieves the objective of reproducing the joint image data distribution.
+
+After training stage:
+
+- Projection through Back Propagation
+
+  *Instead of maximizing D(y), we compute the ˆz vector that minimizes our objective function in Eq. (3). This means that we are projecting the corrupted input onto the z space of the generator through the iterative back propagation. Specifically, the input is a vector z initialized with uniformly random noise, and a joint image with only the sketch on the left with the image on the right being masked out. We back propagate the loss in Eq. (3) to update the randomly sampled input z of network G. Note that in this stage only the input vector z is updated using gradient descent, the weights of the network G and D remain unchanged.*
+
+  Use backpropagation to adjust vector z.
+
+  ![image-20200727105128427](images/image-20200727105128427.png)
+
+## Their idea
+
+think sketch as context of image to learn the map.
+
