@@ -6,7 +6,7 @@
 
 - image dataset: CelebAMask-HQ (from https://github.com/switchablenorms/CelebAMask-HQ)
 - gimp-2.8, [gimp scripts](https://www.gimp.org/tutorials/Basic_Batch/), [gimp Procedure Browser](https://docs.gimp.org/2.10/en/plug-in-dbbrowser.html), gimp photocopy filter (plug-in-photocopy)
-- [sketch simplify and their pre-train model](https://github.com/bobbens/sketch_simplification), in this way we need use pytorch of specific version
+- [sketch simplify and their pre-trained model](https://github.com/bobbens/sketch_simplification), in this way we need use pytorch of specific version. use model_gan.t7 as our pre-trained model
 
 ## Parameter
 
@@ -30,10 +30,15 @@
   >      (plug-in-photocopy RUN-NONINTERACTIVE image drawable mask_radius sharpness pct_black pct_white)
   >      (gimp-file-save RUN-NONINTERACTIVE image drawable filename filename)))
 
-- gimp command:
+- gimp command (example):
 
   >gimp -i -b '(test_photocopy  "37.jpg" 5 0.5 0.5 0.5 )' -b '(gimp-quit 0)'
 
 - simplify:
 
   > see [github](https://github.com/bobbens/sketch_simplification) for details
+
+## Program
+
+- photocopy_experiment() in utils.py
+- simplify_sketch() in utils.py

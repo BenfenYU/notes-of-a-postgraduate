@@ -9,3 +9,8 @@
 # 2020.7.15.
 
 - self-supervised learning
+
+# 2020.7.31
+
+- Train Cycle GAN using face sketches (sketches of different parameters) from sketch to grayscale
+- understand deep face in jitor and then overwrite it in pytorch
